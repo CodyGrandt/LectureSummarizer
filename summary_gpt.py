@@ -9,14 +9,17 @@ client = openai.OpenAI()
 
 # === Define user input and mode ===
 text = "The mitochondria is an organelle that produces energy in cells."
-mode = "simplify"  # Options: "simplify", "summarize", "bullet", "complexify"
+mode = "eli5"  # Options: simplify, summarize, bullet, complexify, question, definition, eli5
 
 # === Prompt templates based on mode ===
 prompt_templates = {
     "simplify": f"Simplify this academic sentence so a middle school student can understand it: {text}",
     "summarize": f"Summarize the main point of this academic text: {text}",
     "bullet": f"Turn this academic text into concise bullet points: {text}",
-    "complexify": f"Rewrite this sentence in a more advanced, formal, and academic tone: {text}"
+    "complexify": f"Rewrite this sentence in a more advanced, formal, and academic tone: {text}",
+    "question": f"Generate a few quiz-style questions based on this academic text: {text}",
+    "definition": f"Identify any key terms in the following and provide simple definitions: {text}",
+    "eli5": f"Explain this as if I'm five years old: {text}"
 }
 
 # === Call GPT with selected prompt ===
