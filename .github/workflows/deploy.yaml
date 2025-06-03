@@ -5,6 +5,10 @@ on:
     branches:
       - master  # or main
 
+  permissions:
+    contents: write  # Required for deploying to GitHub Pages
+    id-token: write  # Required for Render deployment
+
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
