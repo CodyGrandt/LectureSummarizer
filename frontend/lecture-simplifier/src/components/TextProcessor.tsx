@@ -20,7 +20,7 @@ const TextProcessor: React.FC = () => {
  const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
-const response = await fetch('https://your-app.onrender.com/process-text', {
+const response = await fetch('https://lecturesummarizer.onrender.com/process-text', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text: inputText, mode: selectedMode }),
