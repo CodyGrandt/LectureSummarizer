@@ -1,0 +1,8 @@
+openai
+python-dotenv
+flask
+transformers
+torch
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+./venv/Scripts/activate
