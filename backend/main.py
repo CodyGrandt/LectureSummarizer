@@ -17,7 +17,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
     "http://localhost:5173",
-    "https://codygrandt.github.io"
+    "https://codygrandt.github.io",
+    "https://codygrandt.github.io/LectureSummarizer/"
 ],
     allow_credentials=True,
     allow_methods=["*"],
