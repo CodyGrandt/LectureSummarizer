@@ -6,12 +6,12 @@ transformers
 torch
 
 # To enter the virtual environment
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-./venv/Scripts/activate
+# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+# ./venv/Scripts/activate
 
 
 # To run backend (ensure venv is activated and you are in the backend directory)
 uvicorn main:app --reload
 
 # To run frontend (ensure venv is activated and you are in the frontend directory)
-npm run dev
+# npm run dev
