@@ -1,9 +1,9 @@
-name: Deploy React App to GitHub Pages
+name: Deploy React Frontend and FastAPI Backend
 
 on:
   push:
     branches:
-      - master  # or main, depending on your default branch
+      - master  # or main
 
 jobs:
   build-deploy:
@@ -18,14 +18,20 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies and build
+      - name: Install frontend dependencies and build
         working-directory: frontend/lecture-simplifier
         run: |
           npm ci
           npm run build
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy frontend to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: frontend/lecture-simplifier/dist
+
+      - name: Trigger Render backend deployment
+        run: curl "$RENDER_DEPLOY_HOOK"
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+
