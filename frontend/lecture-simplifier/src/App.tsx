@@ -1,6 +1,6 @@
 // src/App.tsx
 
-import React from 'react';
+// import React from 'react';
 import './App.css';
 import TextProcessor from './components/TextProcessor';
 
