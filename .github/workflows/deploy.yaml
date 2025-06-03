@@ -1,41 +1,38 @@
-name: Deploy React Frontend and FastAPI Backend
+name: Deploy frontend to GitHub Pages
 
 on:
   push:
     branches:
-      - master  # or main
+      - master  # Or main, depending on your default branch
 
-  permissions:
-    contents: write  # Required for deploying to GitHub Pages
-    id-token: write  # Required for Render deployment
+permissions:
+  contents: write  # ✅ Required to push to gh-pages branch
 
 jobs:
-  build-deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend/lecture-simplifier
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: Install frontend dependencies and build
-        working-directory: frontend/lecture-simplifier
-        run: |
-          npm ci
-          npm run build
+      - name: Install dependencies
+        run: npm install
 
-      - name: Deploy frontend to GitHub Pages
+      - name: Build site
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: frontend/lecture-simplifier/dist
-
-      - name: Trigger Render backend deployment
-        run: curl "$RENDER_DEPLOY_HOOK"
-        env:
-          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
-
