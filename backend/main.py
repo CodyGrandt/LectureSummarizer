@@ -15,7 +15,10 @@ app = FastAPI()
 # Enable CORS for local frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://codygrandt.github.io"],
+    allow_origins=[
+    "http://localhost:5173/LectureSummarizer",
+    "https://codygrandt.github.io"
+],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -26,7 +29,7 @@ class InputData(BaseModel):
     text: str
     mode: str
 
-# Test endpoint to check if the backend is running
+    # Test endpoint to check if the backend is running
 @app.get("/")
 def root():
     return {"message": "Backend is running!"}
