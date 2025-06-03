@@ -16,7 +16,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-    "http://localhost:5173/LectureSummarizer",
+    "http://localhost:5173",
     "https://codygrandt.github.io"
 ],
     allow_credentials=True,
