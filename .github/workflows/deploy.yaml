@@ -1,36 +1,35 @@
-name: Deploy frontend to GitHub Pages
+# .github/workflows/deploy-gh-pages.yml
+name: Deploy with gh-pages
 
 on:
   push:
     branches:
-      - master  # or 'main'
-
-permissions:
-  contents: write  # Required to push to gh-pages branch
+      - master
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/lecture-simplifier
 
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
       - name: Install dependencies
-        working-directory: frontend/lecture-simplifier
         run: npm install
 
-      - name: Build frontend
-        working-directory: frontend/lecture-simplifier
-        run: npm run build
+      - name: Deploy with gh-pages
+        run: |
+          git config --global user.email "CodyGrandt@users.noreply.github.com"
+          git config --global user.name "CodyGrandt"
+          npm run deploy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: frontend/lecture-simplifier/dist
