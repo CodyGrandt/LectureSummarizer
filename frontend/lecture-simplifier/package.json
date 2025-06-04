@@ -9,8 +9,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy": "gh-pages -d dist",
-    "predeploy": "npm run build"
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist -u 'Cody Grandt <codygrandt04@gmail.com>' --repo=https://x-access-token:${GITHUB_TOKEN}@github.com/CodyGrandt/LectureSummarizer.git"
+
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
