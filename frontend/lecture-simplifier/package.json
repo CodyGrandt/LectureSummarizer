@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist -u 'Cody Grandt <codygrandt04@gmail.com>' --repo=https://x-access-token:${GITHUB_TOKEN}@github.com/CodyGrandt/LectureSummarizer.git"
+    "deploy": "gh-pages -d dist -u 'CodyGrandt <codygrandt04@gmail.com>' --repo=https://x-access-token:${GITHUB_TOKEN}@github.com/CodyGrandt/LectureSummarizer.git"
 
   },
   "dependencies": {

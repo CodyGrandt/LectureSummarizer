@@ -27,8 +27,6 @@ jobs:
 
       - name: Deploy with gh-pages
         run: |
-          git config --global user.email "codygrandt04@gmail.com"
-          git config --global user.name "CodyGrandt"
           npm run deploy
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
