@@ -1,36 +1,42 @@
-name: Deploy to GitHub Pages
+name: Deploy frontend to GitHub Pages
 
 on:
   push:
     branches:
-      - master  # or 'main' if that's your default
+      - master  # or main if that's your default branch
 
 permissions:
-  contents: write  # Required for pushing to gh-pages
+  contents: write  # required for deploying to gh-pages
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: frontend/lecture-simplifier
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: 18
 
       - name: Install dependencies
-        working-directory: frontend/lecture-simplifier
         run: npm install
 
-      - name: Build project
-        working-directory: frontend/lecture-simplifier
+      - name: Build Vite site
         run: npm run build
+
+      - name: deploy
+        run: npm run deploy
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: frontend/lecture-simplifier/dist
+
