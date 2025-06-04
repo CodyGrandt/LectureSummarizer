@@ -1,13 +1,12 @@
-# .github/workflows/deploy.yml
 name: Deploy frontend to GitHub Pages
 
 on:
   push:
     branches:
-      - master  # or 'main' if that's your default
+      - master  # or 'main'
 
 permissions:
-  contents: write  # Needed to push to gh-pages
+  contents: write  # Required to push to gh-pages branch
 
 jobs:
   build-and-deploy:
@@ -16,9 +15,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Set working directory
-        run: cd frontend/lecture-simplifier
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
