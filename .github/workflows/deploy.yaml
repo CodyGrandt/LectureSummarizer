@@ -1,34 +1,36 @@
+# .github/workflows/deploy.yml
 name: Deploy frontend to GitHub Pages
 
 on:
   push:
     branches:
-      - master  # or main if that's your default branch
+      - master  # or 'main' if that's your default
 
 permissions:
-  contents: write  # required for deploying to gh-pages
+  contents: write  # Needed to push to gh-pages
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: frontend/lecture-simplifier
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
+      - name: Set working directory
+        run: cd frontend/lecture-simplifier
+
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
       - name: Install dependencies
+        working-directory: frontend/lecture-simplifier
         run: npm install
 
-      - name: Build Vite site
+      - name: Build frontend
+        working-directory: frontend/lecture-simplifier
         run: npm run build
 
       - name: Deploy to GitHub Pages
