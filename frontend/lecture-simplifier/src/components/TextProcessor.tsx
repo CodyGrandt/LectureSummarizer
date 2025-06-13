@@ -54,13 +54,19 @@ const TextProcessor: React.FC = () => {
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    const fileType = file.type;
+
+    if (fileType === 'text/plain') {
       const reader = new FileReader();
       reader.onload = (e) => {
         const text = e.target?.result as string;
         setInputText(text);
       };
       reader.readAsText(file);
+    } else {
+      alert('Unsupported file type. Please upload a .txt file.');
     }
   };
 
@@ -161,28 +167,16 @@ const TextProcessor: React.FC = () => {
             <Typography variant="h6">Output:</Typography>
             <Box sx={{ whiteSpace: 'pre-line', lineHeight: 1.7, mb: 2 }}>
               {result.split('\n').map((line, index) => {
-                const match = line.match(/^([^:]+):\s*(.*)$/); // matches "Term: definition"
-                if (match) {
+                const match = line.match(/^([^:]+):\s*(.*)$/);
+                if (match && selectedMode === 'define') {
                   return (
-                    <Typography
-                      key={index}
-                      variant="body1"
-                      align="left"
-                      sx={{ lineHeight: 1.7 }}
-                      color="primary"
-                    >
+                    <Typography key={index} variant="body1" align="left" sx={{ lineHeight: 1.7 }}>
                       <strong>{match[1]}:</strong> {match[2]}
                     </Typography>
                   );
                 } else {
                   return (
-                    <Typography
-                      key={index}
-                      variant="body1"
-                      align="left"
-                      sx={{ lineHeight: 1.7 }}
-                      color="primary"
-                    >
+                    <Typography key={index} variant="body1" align="left" sx={{ lineHeight: 1.7 }}>
                       {line}
                     </Typography>
                   );
