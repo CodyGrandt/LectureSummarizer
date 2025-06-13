@@ -1,6 +1,6 @@
 // src/components/TextProcessor.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Box,
   Button,
@@ -17,6 +17,8 @@ const TextProcessor: React.FC = () => {
   const [selectedMode, setSelectedMode] = useState('simplify');
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const modes = [
     'simplify',
@@ -50,6 +52,32 @@ const TextProcessor: React.FC = () => {
     }
   };
 
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target?.result as string;
+        setInputText(text);
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const handleDownload = () => {
+    const blob = new Blob([result], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'lecture_output.txt';
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Box sx={{ maxWidth: 700, mx: 'auto', mt: 5, p: 2 }}>
       <Box
@@ -71,8 +99,7 @@ const TextProcessor: React.FC = () => {
             letterSpacing: 1,
           }}
         >
-            Textbook/Lecture Simplifier
-
+          LectureSimplifier
         </Typography>
         <Typography variant="subtitle1">
           Simplify and summarize academic text in seconds.
@@ -93,6 +120,17 @@ const TextProcessor: React.FC = () => {
             sx={{ mb: 2 }}
           />
 
+          <Button variant="outlined" component="label" fullWidth sx={{ mb: 2 }}>
+            Upload Text File
+            <input
+              type="file"
+              accept=".txt"
+              hidden
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+            />
+          </Button>
+
           <Select
             fullWidth
             value={selectedMode}
@@ -107,13 +145,7 @@ const TextProcessor: React.FC = () => {
             ))}
           </Select>
 
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            disabled={loading}
-            fullWidth
-          >
+          <Button type="submit" variant="contained" color="primary" disabled={loading} fullWidth>
             {loading ? 'Processing...' : 'Submit'}
           </Button>
         </form>
@@ -127,7 +159,7 @@ const TextProcessor: React.FC = () => {
         {result && (
           <Box sx={{ mt: 4 }}>
             <Typography variant="h6">Output:</Typography>
-            <Box sx={{ whiteSpace: 'pre-line', lineHeight: 1.7 }}>
+            <Box sx={{ whiteSpace: 'pre-line', lineHeight: 1.7, mb: 2 }}>
               {result.split('\n').map((line, index) => {
                 const match = line.match(/^([^:]+):\s*(.*)$/); // matches "Term: definition"
                 if (match) {
@@ -157,6 +189,9 @@ const TextProcessor: React.FC = () => {
                 }
               })}
             </Box>
+            <Button variant="outlined" onClick={handleDownload} fullWidth>
+              Download Result as .txt
+            </Button>
           </Box>
         )}
       </Paper>
