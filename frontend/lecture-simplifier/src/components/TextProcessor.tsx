@@ -21,6 +21,7 @@ const TextProcessor: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [notes, setNotes] = useState('');
+  const [notesSaved, setNotesSaved] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -99,17 +100,21 @@ const TextProcessor: React.FC = () => {
   };
 
   const handleDownloadNotes = () => {
+    const timestamp = new Date().toISOString().slice(0, 16).replace('T', '-').replace(':', '');
     const blob = new Blob([notes], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'lecture_notes.txt';
+    link.download = `lecture_notes_${timestamp}.txt`;
     document.body.appendChild(link);
     link.click();
 
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+
+    // Show "Notes saved!" Snackbar
+    setNotesSaved(true);
   };
 
   return (
@@ -207,7 +212,7 @@ const TextProcessor: React.FC = () => {
               type="submit"
               variant="contained"
               color="primary"
-              disabled={loading}
+              disabled={loading || inputText.trim() === ''}
               fullWidth
               sx={{ mb: 2 }}
             >
@@ -276,6 +281,9 @@ const TextProcessor: React.FC = () => {
             flex: '1 1 0',
             display: 'flex',
             flexDirection: 'column',
+            backgroundColor: 'background.paper',
+            border: '1px solid',
+            borderColor: 'divider',
           }}
         >
           <Typography variant="h6" sx={{ mb: 2 }}>
@@ -315,6 +323,24 @@ const TextProcessor: React.FC = () => {
           variant="filled"
         >
           Output copied to clipboard!
+        </MuiAlert>
+      </Snackbar>
+
+      {/* Snackbar for Notes Saved */}
+      <Snackbar
+        open={notesSaved}
+        autoHideDuration={2000}
+        onClose={() => setNotesSaved(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <MuiAlert
+          onClose={() => setNotesSaved(false)}
+          severity="success"
+          sx={{ width: '100%' }}
+          elevation={6}
+          variant="filled"
+        >
+          Notes saved!
         </MuiAlert>
       </Snackbar>
     </Box>
