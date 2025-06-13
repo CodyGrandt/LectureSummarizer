@@ -20,6 +20,7 @@ const TextProcessor: React.FC = () => {
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [notes, setNotes] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -97,8 +98,22 @@ const TextProcessor: React.FC = () => {
     setResult('');
   };
 
+  const handleDownloadNotes = () => {
+    const blob = new Blob([notes], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'lecture_notes.txt';
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <Box sx={{ maxWidth: 700, mx: 'auto', mt: 5, p: 2 }}>
+    <Box sx={{ maxWidth: 1200, mx: 'auto', p: 2 }}>
       <Box
         sx={{
           bgcolor: 'primary.main',
@@ -125,109 +140,165 @@ const TextProcessor: React.FC = () => {
         </Typography>
       </Box>
 
-      <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
-        <form onSubmit={handleSubmit}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          alignItems: 'stretch',
+          gap: 3,
+        }}
+      >
+        {/* Main Processing Panel */}
+        <Paper
+          elevation={3}
+          sx={{
+            p: 3,
+            flex: '1 1 0',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <form
+            onSubmit={handleSubmit}
+            style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+          >
+            <TextField
+              label="Enter academic text"
+              multiline
+              fullWidth
+              rows={6}
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              variant="outlined"
+              margin="normal"
+              sx={{ mb: 1 }}
+            />
+
+            <Typography variant="caption" sx={{ display: 'block', mb: 2, opacity: 0.7 }}>
+              Characters: {inputText.length}
+            </Typography>
+
+            <Button variant="outlined" component="label" fullWidth sx={{ mb: 2 }}>
+              Upload Text File
+              <input
+                type="file"
+                accept=".txt"
+                hidden
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+              />
+            </Button>
+
+            <Select
+              fullWidth
+              value={selectedMode}
+              onChange={(e) => setSelectedMode(e.target.value)}
+              variant="outlined"
+              sx={{ mb: 2 }}
+            >
+              {modes.map((mode) => (
+                <MenuItem key={mode} value={mode}>
+                  {mode.charAt(0).toUpperCase() + mode.slice(1).replace(/_/g, ' ')}
+                </MenuItem>
+              ))}
+            </Select>
+
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={loading}
+              fullWidth
+              sx={{ mb: 2 }}
+            >
+              {loading ? 'Processing...' : 'Submit'}
+            </Button>
+
+            <Button variant="outlined" color="secondary" fullWidth onClick={handleClear}>
+              Clear Input & Output
+            </Button>
+          </form>
+
+          {loading && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+              <CircularProgress />
+            </Box>
+          )}
+
+          {result && (
+            <Box sx={{ mt: 4 }}>
+              <Typography variant="h6">Output:</Typography>
+
+              <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
+                Mode:{' '}
+                {selectedMode.charAt(0).toUpperCase() + selectedMode.slice(1).replace(/_/g, ' ')}
+              </Typography>
+
+              <Box sx={{ whiteSpace: 'pre-line', lineHeight: 1.7, mb: 2 }}>
+                {result.split('\n').map((line, index) => {
+                  const match = line.match(/^([^:]+):\s*(.*)$/);
+                  if (match && selectedMode === 'define') {
+                    return (
+                      <Typography key={index} variant="body1" align="left" sx={{ lineHeight: 1.7 }}>
+                        <strong>{match[1]}:</strong> {match[2]}
+                      </Typography>
+                    );
+                  } else {
+                    return (
+                      <Typography key={index} variant="body1" align="left" sx={{ lineHeight: 1.7 }}>
+                        {line}
+                      </Typography>
+                    );
+                  }
+                })}
+              </Box>
+
+              <Typography variant="caption" sx={{ display: 'block', mt: 1, opacity: 0.7 }}>
+                Word count: {result.split(/\s+/).filter(Boolean).length}
+              </Typography>
+
+              <Button variant="outlined" onClick={handleDownload} fullWidth sx={{ mt: 2 }}>
+                Download Result as .txt
+              </Button>
+
+              <Button variant="outlined" onClick={handleCopyToClipboard} fullWidth sx={{ mt: 2 }}>
+                Copy Output to Clipboard
+              </Button>
+            </Box>
+          )}
+        </Paper>
+
+        {/* Notes Section */}
+        <Paper
+          elevation={3}
+          sx={{
+            p: 3,
+            flex: '1 1 0',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Notes
+          </Typography>
+
           <TextField
-            label="Enter academic text"
+            label="Notes"
             multiline
             fullWidth
-            rows={6}
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
+            rows={12}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
             variant="outlined"
             margin="normal"
-            sx={{ mb: 2 }}
+            sx={{ flexGrow: 1 }}
           />
 
-          <Button variant="outlined" component="label" fullWidth sx={{ mb: 2 }}>
-            Upload Text File
-            <input
-              type="file"
-              accept=".txt"
-              hidden
-              ref={fileInputRef}
-              onChange={handleFileUpload}
-            />
+          <Button onClick={handleDownloadNotes} variant="outlined" fullWidth sx={{ mt: 2 }}>
+            Download Notes as .txt
           </Button>
-
-          <Select
-            fullWidth
-            value={selectedMode}
-            onChange={(e) => setSelectedMode(e.target.value)}
-            variant="outlined"
-            sx={{ mb: 2 }}
-          >
-            {modes.map((mode) => (
-              <MenuItem key={mode} value={mode}>
-                {mode.charAt(0).toUpperCase() + mode.slice(1).replace(/_/g, ' ')}
-              </MenuItem>
-            ))}
-          </Select>
-
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            disabled={loading}
-            fullWidth
-            sx={{ mb: 2 }}
-          >
-            {loading ? 'Processing...' : 'Submit'}
-          </Button>
-
-          <Button variant="outlined" color="secondary" fullWidth onClick={handleClear}>
-            Clear Input & Output
-          </Button>
-        </form>
-
-        {loading && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-            <CircularProgress />
-          </Box>
-        )}
-
-        {result && (
-          <Box sx={{ mt: 4 }}>
-            <Typography variant="h6">Output:</Typography>
-
-            <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
-              Mode:{' '}
-              {selectedMode.charAt(0).toUpperCase() + selectedMode.slice(1).replace(/_/g, ' ')}
-            </Typography>
-
-            <Box sx={{ whiteSpace: 'pre-line', lineHeight: 1.7, mb: 2 }}>
-              {result.split('\n').map((line, index) => {
-                const match = line.match(/^([^:]+):\s*(.*)$/);
-                if (match && selectedMode === 'define') {
-                  return (
-                    <Typography key={index} variant="body1" align="left" sx={{ lineHeight: 1.7 }}>
-                      <strong>{match[1]}:</strong> {match[2]}
-                    </Typography>
-                  );
-                } else {
-                  return (
-                    <Typography key={index} variant="body1" align="left" sx={{ lineHeight: 1.7 }}>
-                      {line}
-                    </Typography>
-                  );
-                }
-              })}
-            </Box>
-
-            <Typography variant="caption" sx={{ display: 'block', mt: 1, opacity: 0.7 }}>
-              Word count: {result.split(/\s+/).filter(Boolean).length}
-            </Typography>
-
-            <Button variant="outlined" onClick={handleDownload} fullWidth sx={{ mt: 2 }}>
-              Download Result as .txt
-            </Button>
-
-            <Button variant="outlined" onClick={handleCopyToClipboard} fullWidth sx={{ mt: 2 }}>
-              Copy Output to Clipboard
-            </Button>
-          </Box>
-        )}
-      </Paper>
+        </Paper>
+      </Box>
 
       {/* Snackbar for Copy Success */}
       <Snackbar
