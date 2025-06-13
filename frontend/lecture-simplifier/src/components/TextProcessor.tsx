@@ -10,13 +10,16 @@ import {
   TextField,
   Typography,
   Paper,
+  Snackbar,
 } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
 
 const TextProcessor: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [selectedMode, setSelectedMode] = useState('simplify');
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -82,6 +85,16 @@ const TextProcessor: React.FC = () => {
 
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+  };
+
+  const handleCopyToClipboard = () => {
+    navigator.clipboard.writeText(result);
+    setCopySuccess(true);
+  };
+
+  const handleClear = () => {
+    setInputText('');
+    setResult('');
   };
 
   return (
@@ -151,8 +164,19 @@ const TextProcessor: React.FC = () => {
             ))}
           </Select>
 
-          <Button type="submit" variant="contained" color="primary" disabled={loading} fullWidth>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={loading}
+            fullWidth
+            sx={{ mb: 2 }}
+          >
             {loading ? 'Processing...' : 'Submit'}
+          </Button>
+
+          <Button variant="outlined" color="secondary" fullWidth onClick={handleClear}>
+            Clear Input & Output
           </Button>
         </form>
 
@@ -165,6 +189,12 @@ const TextProcessor: React.FC = () => {
         {result && (
           <Box sx={{ mt: 4 }}>
             <Typography variant="h6">Output:</Typography>
+
+            <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
+              Mode:{' '}
+              {selectedMode.charAt(0).toUpperCase() + selectedMode.slice(1).replace(/_/g, ' ')}
+            </Typography>
+
             <Box sx={{ whiteSpace: 'pre-line', lineHeight: 1.7, mb: 2 }}>
               {result.split('\n').map((line, index) => {
                 const match = line.match(/^([^:]+):\s*(.*)$/);
@@ -183,12 +213,39 @@ const TextProcessor: React.FC = () => {
                 }
               })}
             </Box>
-            <Button variant="outlined" onClick={handleDownload} fullWidth>
+
+            <Typography variant="caption" sx={{ display: 'block', mt: 1, opacity: 0.7 }}>
+              Word count: {result.split(/\s+/).filter(Boolean).length}
+            </Typography>
+
+            <Button variant="outlined" onClick={handleDownload} fullWidth sx={{ mt: 2 }}>
               Download Result as .txt
+            </Button>
+
+            <Button variant="outlined" onClick={handleCopyToClipboard} fullWidth sx={{ mt: 2 }}>
+              Copy Output to Clipboard
             </Button>
           </Box>
         )}
       </Paper>
+
+      {/* Snackbar for Copy Success */}
+      <Snackbar
+        open={copySuccess}
+        autoHideDuration={2000}
+        onClose={() => setCopySuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <MuiAlert
+          onClose={() => setCopySuccess(false)}
+          severity="success"
+          sx={{ width: '100%' }}
+          elevation={6}
+          variant="filled"
+        >
+          Output copied to clipboard!
+        </MuiAlert>
+      </Snackbar>
     </Box>
   );
 };
