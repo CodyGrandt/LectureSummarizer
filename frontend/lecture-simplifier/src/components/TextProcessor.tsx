@@ -101,7 +101,13 @@ const TextProcessor: React.FC = () => {
       {result && (
         <Box sx={{ mt: 4 }}>
           <Typography variant="h6">Output:</Typography>
-          <Typography variant="body1">{result}</Typography>
+          <Typography
+            variant="body1"
+            sx={{ whiteSpace: 'pre-line', lineHeight: 1.7 }}
+            align="left"
+          >
+            {result}
+          </Typography>
         </Box>
       )}
     </Box>
@@ -109,4 +115,3 @@ const TextProcessor: React.FC = () => {
 };
 
 export default TextProcessor;
-
