@@ -9,6 +9,7 @@ import {
   Select,
   TextField,
   Typography,
+  Paper,
 } from '@mui/material';
 
 const TextProcessor: React.FC = () => {
@@ -50,66 +51,115 @@ const TextProcessor: React.FC = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 600, mx: 'auto', mt: 5, p: 2 }}>
-      <Typography variant="h4" gutterBottom>
-        LectureSimplifier
-      </Typography>
-
-      <form onSubmit={handleSubmit}>
-        <TextField
-          label="Enter academic text"
-          multiline
-          fullWidth
-          rows={6}
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          variant="outlined"
-          margin="normal"
-        />
-
-        <Select
-          fullWidth
-          value={selectedMode}
-          onChange={(e) => setSelectedMode(e.target.value)}
-          variant="outlined"
-          sx={{ mb: 2 }}
+    <Box sx={{ maxWidth: 700, mx: 'auto', mt: 5, p: 2 }}>
+      <Box
+        sx={{
+          bgcolor: 'primary.main',
+          color: 'primary.contrastText',
+          p: 2,
+          borderRadius: 2,
+          textAlign: 'center',
+          mb: 3,
+          boxShadow: 3,
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{
+            fontFamily: '"Poppins", sans-serif',
+            fontWeight: 600,
+            letterSpacing: 1,
+          }}
         >
-          {modes.map((mode) => (
-            <MenuItem key={mode} value={mode}>
-              {mode.charAt(0).toUpperCase() + mode.slice(1).replace(/_/g, ' ')}
-            </MenuItem>
-          ))}
-        </Select>
+            Textbook/Lecture Simplifier
 
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={loading}
-          fullWidth
-        >
-          {loading ? 'Processing...' : 'Submit'}
-        </Button>
-      </form>
+        </Typography>
+        <Typography variant="subtitle1">
+          Simplify and summarize academic text in seconds.
+        </Typography>
+      </Box>
 
-      {loading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <CircularProgress />
-        </Box>
-      )}
+      <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Enter academic text"
+            multiline
+            fullWidth
+            rows={6}
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            variant="outlined"
+            margin="normal"
+            sx={{ mb: 2 }}
+          />
 
-      {result && (
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h6">Output:</Typography>
-          <Typography
-            variant="body1"
-            sx={{ whiteSpace: 'pre-line', lineHeight: 1.7 }}
-            align="left"
+          <Select
+            fullWidth
+            value={selectedMode}
+            onChange={(e) => setSelectedMode(e.target.value)}
+            variant="outlined"
+            sx={{ mb: 2 }}
           >
-            {result}
-          </Typography>
-        </Box>
-      )}
+            {modes.map((mode) => (
+              <MenuItem key={mode} value={mode}>
+                {mode.charAt(0).toUpperCase() + mode.slice(1).replace(/_/g, ' ')}
+              </MenuItem>
+            ))}
+          </Select>
+
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={loading}
+            fullWidth
+          >
+            {loading ? 'Processing...' : 'Submit'}
+          </Button>
+        </form>
+
+        {loading && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <CircularProgress />
+          </Box>
+        )}
+
+        {result && (
+          <Box sx={{ mt: 4 }}>
+            <Typography variant="h6">Output:</Typography>
+            <Box sx={{ whiteSpace: 'pre-line', lineHeight: 1.7 }}>
+              {result.split('\n').map((line, index) => {
+                const match = line.match(/^([^:]+):\s*(.*)$/); // matches "Term: definition"
+                if (match) {
+                  return (
+                    <Typography
+                      key={index}
+                      variant="body1"
+                      align="left"
+                      sx={{ lineHeight: 1.7 }}
+                      color="primary"
+                    >
+                      <strong>{match[1]}:</strong> {match[2]}
+                    </Typography>
+                  );
+                } else {
+                  return (
+                    <Typography
+                      key={index}
+                      variant="body1"
+                      align="left"
+                      sx={{ lineHeight: 1.7 }}
+                      color="primary"
+                    >
+                      {line}
+                    </Typography>
+                  );
+                }
+              })}
+            </Box>
+          </Box>
+        )}
+      </Paper>
     </Box>
   );
 };
